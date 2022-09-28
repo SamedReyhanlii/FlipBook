@@ -1,96 +1,4 @@
 
-    var url = './menu_compressed.pdf'; //koymak istediğiniz pdf
-    //var url = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf'; //url pdf
-
-    var flipbook = document.getElementById('flipbook');
-    var scale = 1.5; // Ayarlanabilir
-
-    $(function() {
-        getpdf(url);
-    });
-
-
-    function getpdf(url) {
-
-        var pdfjsLib = window['pdfjs-dist/build/pdf'];
-        pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js'; //Worker.js yolunu kendi projenize koyun
-
-
-        var loadingTask = pdfjsLib.getDocument(url);
-        loadingTask.promise.then(function(pdf) {
-            //Toplam sayfa sayısına göre sabit div ve canvas ekleyin
-            console.log("Toplam sayfa", pdf.numPages);
-            for (let i = 1; i <= pdf.numPages; i++) {
-                let id = 'canvaspage' + i;
-                let div = document.createElement('div');
-                div.innerHTML = '<canvas id="' + id + '"></canvas>';
-                flipbook.append(div);
-                // console.log(div);
-                let x = document.getElementById('canvaspage' + i);
-                // console.log(document.getElementById('canvaspage' + i));
-                setcanvas(i, pdf, id, x);
-                // console.log(document.getElementById(i));
-            }
-
-
-            //Fonsiyonu Çağır 
-            let w = window.innerWidth;
-            if (w >= 1000) {
-                loadAppPc()
-            } else {
-                loadAppMobil()
-            }
-
-        })
-    }
-
-    //canvas'a pdf ekle
-
-    function setcanvas(i, pdf, id, x) {
-        pdf.getPage(i).then(function(page) {
-            let canvas = x;
-            let context = canvas.getContext('2d');
-            var viewport = page.getViewport({
-                scale: scale
-            });
-
-
-
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-
-            // Render PDF page into canvas context
-            let renderContext = {
-                canvasContext: context,
-                viewport: viewport
-            };
-
-            page.render(renderContext);
-
-        })
-    }
-
-    function loadAppMobil() {
-        $(flipbook).turn({
-            autoCenter: false, //Merkez olsun
-            display: 'single', //Tek Sayfa Gösterimi
-        });
-    }
-
-    function loadAppPc() {
-        $(flipbook).turn({
-            autoCenter: false, //Merkez olsun
-            //display: 'single',//Tek Sayfa Gösterimi
-        });
-    }
-    //Ekran yakınlaştırıldığında kabuk boyutunu değiştirmeniz gerekir, düzeltmek isterseniz eklemeniz gerekmez.
-    // window.addEventListener('resize',function(e){
-    //  flipbook.style.width="";
-    //   flipbook.style.height="";
-    //  $(flipbook).turn("size", window.innerWidth,window.innerHeight*0.8);
-    // })
-
-    
     (function (f) {
         function I(a, b, c) {
             if (!c[0] || "object" == typeof c[0]) return b.init.apply(a, c);
@@ -174,7 +82,7 @@
             K = J / 2,
             t = "ontouchstart" in window,
             q = t ? { down: "touchstart", move: "touchmove", up: "touchend", over: "touchstart", out: "touchend" } : { down: "mousedown", move: "mousemove", up: "mouseup", over: "mouseover", out: "mouseout" },
-            o = { backward: ["bl", "tl"], forward: ["br", "tr"], all: "tl bl tr br l r".split(" ") },
+            o = { backward: ["bl", "tl","l"], forward: ["br", "tr","r"], all: "tl bl tr br l r".split(" ") },
             U = ["single", "double"],
             V = ["ltr", "rtl"],
             W = { acceleration: !0, display: "double", duration: 600, page: 1, gradients: !0, turnCorners: "bl,br", when: null },
@@ -660,6 +568,7 @@
                         e = d.opts.turn,
                         h = e.data();
                     c = "single" == h.display ? ("br" == b.corner || "tr" == b.corner ? b.x < c.width() / 2 : b.x > c.width() / 2) : 0 > b.x || b.x > c.width();
+                    console.log("1")
                     if (200 > new Date().getTime() - d.time || c) a.preventDefault(), g._turnPage.call(e, d.opts.next);
                     h.mouseAction = !1;
                 },
@@ -1142,9 +1051,9 @@
                         a
                             ? ((d = b.opts.next), e[d] != b.opts.page && (b.folding && i._moveFoldingPage.call(this, !1), i._foldingPage.call(this).appendTo(b.fpage), (e[d] = b.opts.page), (b.folding = d)), c.turn("update"))
                             : b.folding &&
-                              (d.pages[b.folding] ? ((c = d.pages[b.folding].data().f), d.pageObjs[b.folding].appendTo(c.wrapper)) : d.pageWrap[b.folding] && d.pageObjs[b.folding].appendTo(d.pageWrap[b.folding]),
-                              b.folding in e && (e[b.folding] = b.folding),
-                              delete b.folding);
+                                (d.pages[b.folding] ? ((c = d.pages[b.folding].data().f), d.pageObjs[b.folding].appendTo(c.wrapper)) : d.pageWrap[b.folding] && d.pageObjs[b.folding].appendTo(d.pageWrap[b.folding]),
+                                b.folding in e && (e[b.folding] = b.folding),
+                                delete b.folding);
                     }
                 },
                 _showFoldedPage: function (a, b) {
@@ -1397,3 +1306,112 @@
         };
         f.findPos = C;
     })(jQuery);
+  
+      // // // // // // Ekran yakınlaştırıldığında kabuk boyutunu değişrmeniz gerekir, düzeltmek isterseniz eklemeniz gerekmez.
+      window.addEventListener('resize',function(e){
+       flipbook.style.width="";
+        flipbook.style.height="";
+       $(flipbook).turn("size", window.innerWidth,window.innerHeight*0.8);
+      })
+  
+      var url = './menu_compressed.pdf'; //pdf file address
+      var flipbook = document.getElementById('flipbook');
+      var scale = 1.5; // Ayarlanabilir
+  
+      $(function() {
+          getpdf(url);
+      });
+  
+      function getpdf(url) {
+          var pdfjsLib = window['pdfjs-dist/build/pdf'];
+          pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js'; //Worker.js yolunu kendi projenize koyun
+          var loadingTask = pdfjsLib.getDocument(url);
+          loadingTask.promise.then(function(pdf) {
+              //Toplam sayfa sayısına göre sabit div ve canvas ekleyin
+              console.log("Toplam sayfa", pdf.numPages);
+              for (let i = 1; i <= pdf.numPages; i++) {
+                  let id = 'canvaspage' + i;
+                  let div = document.createElement('div');
+                  div.innerHTML = '<canvas id="' + id + '"></canvas>';
+                  flipbook.append(div);
+                  // console.log(div);
+                  let x = document.getElementById('canvaspage' + i);
+                  // console.log(document.getElementById('canvaspage' + i));
+                  setcanvas(i, pdf, id, x);
+                  // console.log(document.getElementById(i));
+              }
+              //Fonsiyonu Çağır 
+              let w = window.innerWidth;
+              if (w >= 1000) {
+                  loadAppPc()
+              } else {
+                  loadAppMobil()
+              }
+          })
+      }
+  
+      //canvas'a pdf ekle
+      function setcanvas(i, pdf, id, x) {
+          pdf.getPage(i).then(function(page) {
+              let canvas = x;
+              let context = canvas.getContext('2d');
+              var viewport = page.getViewport({
+                  scale: scale
+              });
+              canvas.height = viewport.height;
+              canvas.width = viewport.width;
+              // Render PDF page into canvas context
+              let renderContext = {
+                  canvasContext: context,
+                  viewport: viewport
+              };
+              page.render(renderContext);
+          })
+      }
+  
+      function loadAppMobil() {
+          $(flipbook).turn({
+              // autoCenter: true, //Merkez olsun
+              display: 'single', //Tek Sayfa Gösterimi
+          });
+      }
+  
+      function loadAppPc() {
+          $(flipbook).turn({
+              autoCenter: false, //Merkez olsun
+              //display: 'single',//Tek Sayfa Gösterimi
+          });
+      }
+  
+      // // // Auto Play Function
+      // function nextPage() {
+      //     $(flipbook).turn("next");
+      // }
+      // setTimeout(nextPage, 3000);
+      
+      $("#prev").click(function(e){
+          e.preventDefault();
+          $(flipbook).turn("previous");
+      });
+      
+      $("#next").click(function(e){
+          e.preventDefault();
+          $(flipbook).turn("next");
+      });
+      
+      $("#prevPage").click(function(e){
+        e.preventDefault();
+        $(flipbook).turn("previous");
+      });
+      
+      $("#nextPage").click(function(e){
+          e.preventDefault();
+          $(flipbook).turn("next");
+      });
+  
+  //  Ekran yakınlaştırıldığında kabuk boyutunu değiştirmeniz gerekir, düzeltmek isterseniz eklemeniz gerekmez.
+      window.addEventListener('resize',function(e){
+       flipbook.style.width="";
+        flipbook.style.height="";
+       $(flipbook).turn("size", window.innerWidth,window.innerHeight*0.8);
+      })
